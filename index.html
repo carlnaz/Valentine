@@ -7,24 +7,26 @@
 
   <style>
     body{
-      height:100vh; margin:0;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center;
+      height:100vh;
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-      overflow:hidden;
     }
 
     h1{
       color:#b30059;
-      margin:0 0 40px;
+      margin-bottom:40px;
       text-align:center;
       padding:0 16px;
     }
 
     .buttons{
       display:flex;
-      gap:180px;
+      gap:160px; /* solid spacing */
       align-items:center;
       justify-content:center;
     }
@@ -36,19 +38,22 @@
       border-radius:12px;
       cursor:pointer;
       box-shadow:0 10px 25px rgba(0,0,0,0.12);
-      user-select:none;
       -webkit-tap-highlight-color: transparent;
     }
 
     #yes{
-      background:#ff4d6d; color:#fff;
-      transition: transform 180ms ease;
+      background:#ff4d6d;
+      color:#fff;
+      transition: transform 150ms ease;
     }
-    #yes:active{ transform: scale(1.05); }
+
+    #yes:active{
+      transform: scale(1.05);
+    }
 
     #no{
-      background:#999; color:#fff;
-      position:absolute; /* we will place it manually */
+      background:#999;
+      color:#fff;
     }
 
     .final{
@@ -60,7 +65,8 @@
 </head>
 
 <body>
-  <h1>Raquel, will you be my Valentine? 💖</h1>
+
+  <h1 id="question">Raquel, will you be my Valentine? 💖</h1>
 
   <div class="buttons">
     <button id="yes">Yes</button>
@@ -69,85 +75,35 @@
 
   <script>
     const yesBtn = document.getElementById("yes");
-    const noBtn  = document.getElementById("no");
+    const noBtn = document.getElementById("no");
+    const question = document.getElementById("question");
 
-    // YES CLICK
+    const noMessages = [
+      "Are you sure? 😅",
+      "Are you really sure?",
+      "Like… really really sure? 🥺",
+      "This feels like the wrong choice 😏",
+      "Last chance… sure about that? 💖"
+    ];
+
+    let noCount = 0;
+
+    noBtn.addEventListener("click", () => {
+      question.textContent = noMessages[noCount];
+      noCount = (noCount + 1) % noMessages.length;
+    });
+
     yesBtn.addEventListener("click", () => {
       document.body.innerHTML = `
         <div class="final">
-          <h1>Good because you didn't have a choice!!! 💕🥰</h1>
+          <h1>Good because you didn't have a choice!!!Let's go to Ba-Ba-Reeba lol jk 💕🥰</h1>
           <p style="font-size:22px;margin-top:10px;">
             You’re officially my Valentine 💘
           </p>
         </div>
       `;
     });
-
-    // ----- BOUNCING NO (starts on touch) -----
-    let bouncing = false;
-    let x = 0, y = 0;
-    let vx = 7, vy = 6;
-    let rafId = null;
-
-    function bounds() {
-      const pad = 10;
-      return {
-        pad,
-        maxX: window.innerWidth  - noBtn.offsetWidth  - pad,
-        maxY: window.innerHeight - noBtn.offsetHeight - pad
-      };
-    }
-
-    function startBounce() {
-      if (bouncing) return;
-      bouncing = true;
-
-      // lock current position before bouncing
-      const rect = noBtn.getBoundingClientRect();
-      x = rect.left;
-      y = rect.top;
-      noBtn.style.left = x + "px";
-      noBtn.style.top  = y + "px";
-
-      rafId = requestAnimationFrame(tick);
-    }
-
-    function tick() {
-      const { pad, maxX, maxY } = bounds();
-
-      x += vx;
-      y += vy;
-
-      if (x <= pad || x >= maxX) vx *= -1;
-      if (y <= pad || y >= maxY) vy *= -1;
-
-      noBtn.style.left = x + "px";
-      noBtn.style.top  = y + "px";
-
-      rafId = requestAnimationFrame(tick);
-    }
-
-    // Mobile: touching No starts the bounce
-    noBtn.addEventListener("touchstart", (e) => {
-      e.preventDefault(); // block click
-      startBounce();
-    }, { passive: false });
-
-    // Safety: if clicked anyway
-    noBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      startBounce();
-    });
-
-    // Keep in bounds on rotation
-    window.addEventListener("resize", () => {
-      if (!bouncing) return;
-      const { pad, maxX, maxY } = bounds();
-      x = Math.min(Math.max(x, pad), maxX);
-      y = Math.min(Math.max(y, pad), maxY);
-      noBtn.style.left = x + "px";
-      noBtn.style.top  = y + "px";
-    });
   </script>
+
 </body>
 </html>
